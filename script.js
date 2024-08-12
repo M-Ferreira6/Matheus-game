@@ -40,12 +40,12 @@ function endGame() {
 }
 
 function showVictoryScreen() {
-    document.getElementById("message").textContent = `Parabéns! Você completou todas as fases!`;
+    document.getElementById("message").textContent = 'Parabéns! Você completou todas as fases!';
     document.getElementById("phase").textContent = '';
     document.getElementById("timer").textContent = '';
     document.getElementById("guessField").style.display = 'none';
     document.getElementById("retryButton").style.display = 'none';
-    document.getElementById("winScreen").style.display = 'block'; // Mostra a tela de vitória
+    document.getElementById("winScreen").style.display = 'block';
 }
 
 function advancePhase() {
@@ -69,43 +69,37 @@ function advancePhase() {
 }
 
 function checkGuess() {
-    if (attempts >= maxAttempts -1) {
-        displayMessage(`Suas tentativas acabaram. O número correto era ${secretNumber}.`);
-        document.getElementById("guessField").disabled = true;
-        document.getElementById("retryButton").style.display = 'inline';
-        return;
-    }
-
     let guess = parseInt(document.getElementById("guessField").value);
 
     if (isNaN(guess) || guess < 1 || guess > 100) {
-        displayMessage(`Por favor, insira um número entre 1 e 100.`);
+        displayMessage('Por favor, insira um número entre 1 e 100.');
         return;
     }
 
-    attempts++;
-
     if (guess === secretNumber) {
+        displayMessage(`Parabéns! Você acertou o número ${secretNumber} na Fase ${phase} em ${attempts + 1} tentativas.`);
+        document.getElementById("guessField").disabled = true;
+        clearInterval(timer);
+
         if (phase === 4) {
-            displayMessage(`Parabéns! Você acertou o número ${secretNumber} na Fase ${phase} em ${attempts} tentativas.`);
-            document.getElementById("guessField").disabled = true;
-            clearInterval(timer); // Para o cronômetro quando o jogo termina
-            showVictoryScreen(); // Mostra a tela de vitória para a Fase 4
+            showVictoryScreen();
         } else {
-            displayMessage(`Parabéns! Você acertou o número ${secretNumber} na Fase ${phase} em ${attempts} tentativas.`);
-            document.getElementById("guessField").disabled = true;
             setTimeout(advancePhase, 2000);
         }
-    } else if (guess < secretNumber) {
-        displayMessage(`Tente um número maior. Tentativas restantes: ${maxAttempts - attempts}`);
     } else {
-        displayMessage(`Tente um número menor. Tentativas restantes: ${maxAttempts - attempts}`);
-    }
-
-    if (phase === 4 && attempts === maxAttempts && guess !== secretNumber) {
-        displayMessage(`Suas tentativas acabaram. O número correto era ${secretNumber}.`);
-        document.getElementById("guessField").disabled = true;
-        document.getElementById("retryButton").style.display = 'inline';
+        attempts++;
+        
+        if (attempts >= maxAttempts) {
+            displayMessage(`Suas tentativas acabaram. O número correto era ${secretNumber}.`);
+            document.getElementById("guessField").disabled = true;
+            document.getElementById("retryButton").style.display = 'inline';
+        } else {
+            if (guess < secretNumber) {
+                displayMessage(`Tente um número maior. Tentativas restantes: ${maxAttempts - attempts}`);
+            } else {
+                displayMessage(`Tente um número menor. Tentativas restantes: ${maxAttempts - attempts}`);
+            }
+        }
     }
 }
 
@@ -122,13 +116,19 @@ function resetGame() {
     document.getElementById("guessField").disabled = false;
     document.getElementById("message").textContent = '';
     document.getElementById("retryButton").style.display = 'none';
-    document.getElementById("winScreen").style.display = 'none'; // Oculta a tela de vitória ao reiniciar
+    document.getElementById("winScreen").style.display = 'none';
     startPhase();
 }
 
 window.onload = () => {
-    phase = 1;
-    attempts = 0;
-    secretNumber = Math.floor(Math.random() * 100) + 1;
-    startPhase();
+ resetGame();
 };
+
+// Previne o envio do formulário ao pressionar Enter
+document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Previne o comportamento padrão
+        }
+    });
+});
