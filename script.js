@@ -129,6 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             event.preventDefault(); // Previne o comportamento padrão
+            if (!document.getElementById("guessField").disabled) {
+                checkGuess();
+            }
         }
     });
 });
+
